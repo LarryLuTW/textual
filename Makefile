@@ -1,7 +1,7 @@
-IOS_VERSION = 18.0
-TVOS_VERSION = 18.0
-WATCHOS_VERSION = 11.0
-VISIONOS_VERSION = 2.0
+IOS_VERSION = 26.0
+TVOS_VERSION = 26.0
+WATCHOS_VERSION = 26.0
+VISIONOS_VERSION = 26.0
 
 PLATFORM_IOS = iOS Simulator,id=$(call udid_for,iOS $(IOS_VERSION),iPhone \d\+ Pro [^M])
 PLATFORM_MACOS = macOS
@@ -45,7 +45,13 @@ bundle-prism:
 	@echo "Bundling Prism.js..."
 	./Scripts/bundle-prism.sh
 
-.PHONY: format test bundle-prism
+build-demo:
+	@echo "Building TextualDemo for iOS..."
+	xcodebuild build -workspace Textual.xcworkspace -scheme TextualDemo -destination platform="$(PLATFORM_IOS)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+	@echo "Building TextualDemo for macOS..."
+	xcodebuild build -workspace Textual.xcworkspace -scheme TextualDemo -destination platform="$(PLATFORM_MACOS)" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+.PHONY: format test bundle-prism build-demo
 
 define udid_for
 $(shell xcrun simctl list devices available '$(1)' | grep '$(2)' | sort -r | head -1 | awk -F '[()]' '{ print $$(NF-3) }')
