@@ -38,7 +38,7 @@ struct TableDemo: View {
       Section {
         StructuredText(
           markdown: content,
-          patternOptions: .init(emoji: .mastoEmoji)
+          syntaxExtensions: [.emoji(.mastoEmoji)]
         )
         .textual.textSelection(.enabled)
       } header: {
@@ -48,7 +48,7 @@ struct TableDemo: View {
       Section("GitHub Style") {
         StructuredText(
           markdown: content,
-          patternOptions: .init(emoji: .mastoEmoji)
+          syntaxExtensions: [.emoji(.mastoEmoji)]
         )
       }
       .textual.structuredTextStyle(.gitHub)
