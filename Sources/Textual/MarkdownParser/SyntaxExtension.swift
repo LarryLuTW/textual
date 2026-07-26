@@ -40,7 +40,9 @@ extension AttributedStringMarkdownParser.SyntaxExtension {
   /// Replaces inline and block math expressions with attachments.
   public static var math: Self {
     .init(patterns: [.mathBlock, .mathInline]) { token, attributes in
-      guard let latex = token.capturedContent else {
+      // Returning nil leaves the delimiters in place, so an over-budget expression
+      // renders as its own source text rather than being typeset.
+      guard let latex = token.capturedContent, MathComplexity.isWithinBudget(latex) else {
         return nil
       }
 

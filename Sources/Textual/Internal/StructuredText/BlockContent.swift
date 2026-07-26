@@ -45,7 +45,11 @@ extension StructuredText {
         OrderedList(intent: intent, content: content)
       case .unorderedList:
         UnorderedList(intent: intent, content: content)
-      case .codeBlock(let languageHint) where languageHint?.lowercased() == "math":
+      // A `math` fence typesets only within `MathComplexity`'s budget; an over-budget
+      // expression falls through to the plain code block below, which shows the source.
+      case .codeBlock(let languageHint)
+      where languageHint?.lowercased() == "math"
+        && MathComplexity.isWithinBudget(String(content.characters[...])):
         MathCodeBlock(content)
       case .codeBlock(let languageHint):
         CodeBlock(content, languageHint: languageHint)
