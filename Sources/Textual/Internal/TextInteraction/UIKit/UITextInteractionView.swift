@@ -72,16 +72,30 @@
       }
 
       let attributedText = model.attributedText(in: selectedRange)
-      let formatter = Formatter(attributedText)
-
       UIPasteboard.general.setItems(
         [
-          [
-            UTType.plainText.identifier: formatter.plainText(),
-            UTType.html.identifier: formatter.html(),
-          ]
+          Self.clipboardItem(
+            for: attributedText,
+            spansMultipleLayouts: selectedRange.start.indexPath.layout
+              != selectedRange.end.indexPath.layout
+          )
         ]
       )
+    }
+
+    static func clipboardItem(
+      for attributedText: NSAttributedString,
+      spansMultipleLayouts: Bool
+    ) -> [String: Any] {
+      guard spansMultipleLayouts else {
+        return [UTType.plainText.identifier: attributedText.string]
+      }
+
+      let formatter = Formatter(attributedText)
+      return [
+        UTType.plainText.identifier: formatter.plainText(),
+        UTType.html.identifier: formatter.html(),
+      ]
     }
 
     private func setUp() {
