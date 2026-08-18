@@ -132,6 +132,32 @@ extension AttributedString {
   }
 }
 
+// MARK: - Table cell ranges
+
+extension AttributedStringProtocol {
+  /// Ranges for each cell in a table row, indexed by the cell's column ordinal.
+  ///
+  /// Empty cells emit no characters (and thus no runs), so positional enumeration
+  /// of `blockRuns` would shift later cells left; missing ordinals get an empty
+  /// range instead.
+  func tableCellRanges(
+    rowIntent: PresentationIntent.IntentType?,
+    columnCount: Int
+  ) -> [Range<AttributedString.Index>] {
+    var ranges = Array(repeating: startIndex..<startIndex, count: columnCount)
+
+    for run in blockRuns(parent: rowIntent) {
+      if case .tableCell(let columnIndex)? = run.intent?.kind,
+        ranges.indices.contains(columnIndex)
+      {
+        ranges[columnIndex] = run.range
+      }
+    }
+
+    return ranges
+  }
+}
+
 extension PresentationIntent {
   fileprivate func intent(
     before intent: PresentationIntent.IntentType?
